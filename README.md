@@ -1,5 +1,5 @@
 # 🦠 Pandemic: The RTOS Game  
-> ELEC-H-410 | Real-Time Systems Project | 2021–2022
+> ELEC-H-410 | Real-Time Systems Project | 2024-2025
 
 ![Platform](https://img.shields.io/badge/platform-PSoC%20-blue)
 ![RTOS](https://img.shields.io/badge/RTOS-FreeRTOS-green)
