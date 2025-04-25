@@ -1,0 +1,151 @@
+\documentclass[a4paper, twoside, 12pt]{article}
+%packages
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[]{background}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm,marginparwidth=2cm]{geometry}
+\usepackage[english]{babel}
+\usepackage[section]{placeins}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{eurosym}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\usepackage{titlesec}
+\usepackage{caption}
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage[table]{xcolor}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage[backend=biber, style=numeric]{biblatex}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue]{hyperref}
+\usetikzlibrary{shapes.geometric, arrows}
+
+
+\linespread{1}
+
+
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{#1}}
+\fancyhead[R]{}
+\fancyhead[L]{\textit{\leftmark}}
+
+
+%\renewcommand{\familydefault}{\sfdefault}
+
+%
+\begin{document}
+\begin{titlepage}
+
+	\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+	%----------------------------------------------------------------------------------------
+	%	LOGO SECTION
+	%----------------------------------------------------------------------------------------
+
+	\includegraphics[width=8cm]{img/logo-polytech.jpg}\\[1cm] % Include a department/university logo - this will require the graphicx package
+
+	%----------------------------------------------------------------------------------------
+
+	\center % Center everything on the page
+
+	%----------------------------------------------------------------------------------------
+	%	HEADING SECTIONS
+	%----------------------------------------------------------------------------------------
+
+	\textsc{\LARGE ELEC-H410}\\[1.5cm] % Name of your university/college
+	\textsc{\Large Université Libre de Bruxelles}\\[0.5cm] % Major heading such as course name
+	\textsc{\large École Polytechnique de Bruxelles}\\[0.5cm] % Minor heading such as course title
+
+	%----------------------------------------------------------------------------------------
+	%	TITLE SECTION
+	%----------------------------------------------------------------------------------------
+	\makeatletter
+	\HRule \\[0.4cm]
+	{ \huge \bfseries Pandemic Project}\\[0.4cm] % Title of your document
+	\HRule \\[1.5cm]
+
+	%----------------------------------------------------------------------------------------
+	%	AUTHOR SECTION
+	%----------------------------------------------------------------------------------------
+
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushleft} \large
+			\emph{Authors of Group 13:}\\ % Your name
+
+			JANKE Nico (540076) \\ VAN Dyck Emile\\ WOJTACH Kacper (513025)
+		\end{flushleft}
+	\end{minipage}
+	~
+	\begin{minipage}{0.4\textwidth}
+		\begin{flushright} \large
+			\emph{Professor:} \\
+			Quitin François
+		\end{flushright}
+	\end{minipage}\\[2cm]
+	\makeatother
+
+	% If you don't want a supervisor, uncomment the two lines below and remove the section above
+	%\Large \emph{Author:}\\
+	%John \textsc{Smith}\\[3cm] % Your name
+
+	%----------------------------------------------------------------------------------------
+	%	DATE SECTION
+	%----------------------------------------------------------------------------------------
+
+	{\large \today}\\[2cm] % Date, change the \today to a set date if you want to be precise
+
+	\backgroundsetup{scale=1,
+		color=black,
+		opacity=0.17,
+		angle=10,
+		position={12cm,-22cm},contents={%
+				\includegraphics[height=20cm,width=20cm,keepaspectratio]{img/sceauULB.jpg}}%
+	}
+
+	\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\newpage
+\BgThispage
+\backgroundsetup{contents={}}
+\tableofcontents
+\newpage
+
+\section{Introduction}
+The goal of the pandemic game is to produce enough vaccines to eradicate the virus
+before the population collapses. We have at our disposal an interface (\textit{pandemic.h})
+to communicate with the game routine.\\
+\begin{itemize}
+	\item Every 3 seconds a vaccine clue is dropped.
+	\item Every 5 seconds the percentage of healthy people in the population is updated.
+	\item On random occasions an individual gets contaminated and we need to quarantine
+	      the population in less than 10 milliseconds.
+\end{itemize}
+To manage these events and win the game we created one task for each with different
+priorities. We also have a task dedicated to printing the game state on a LCD screen.
+
+\section{Tasks and Synchronization}
+\subsection{Quarantine}
+This task has the highest priority of all our tasks. All it does is wait for the
+\textit{QuarantineStart} binary semaphore to be available. This is triggered by the contamination.
+When the semaphore is available the task starts the quarantine. This is done in time because
+of the priority of the task.
+
+\subsection{Vaccine}
+
+\subsection{Medicine}
+\subsection{LCD}
+
+\section{Logic Analyzer Traces}
+
+\section{Conclusion}
+
+\nocite{*}
+\end{document}
