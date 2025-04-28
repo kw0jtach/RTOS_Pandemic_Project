@@ -139,9 +139,24 @@ When the semaphore is available the task starts the quarantine. This is done in 
 of the priority of the task.
 
 \subsection{Vaccine}
+The \textit{vaccineProductionTask} has the second highest priority. It waits for a clue to be
+released to start producing a vaccine. That way we start producing as soon as we get a
+clue. This is needed because we have 3 seconds to produce a vaccine after the release.\\
+When the vaccine is produced we ship it immediately. Once this is done we give the lcd
+and lab semaphores. The first one is to notify the LCD task that the game state has changed
+and the second one is to notify the Medicine task that it can producce or ship a medicine.
 
 \subsection{Medicine}
+As specified is the previous section, the \textit{medicineProductionTask} is notified by
+the vaccine task when a vaccine is shipped and there is time to produce or ship a medicine.
+This task because of its lower priority and the fact that it has to wait for the vaccine task
+only runs when there is time between vaccine production.\\
+This will be more visible in the logic analyzer traces.
+
 \subsection{LCD}
+This last task is the lowest priority one. It is notified by the vaccine and medicine tasks
+when the game state has changed. It will print the game state as specified in the
+specification.
 
 \section{Logic Analyzer Traces}
 
