@@ -124,39 +124,56 @@ void freeRTOSInit(void) {
  */
 void releaseContamination(void) {
   GPIOJ21_Write(1u);
+
+  // Give the quarantine semaphore to start the quarantine task
   xSemaphoreGive(quarantineStart);
 }
 
+/*
+ * This task is responsible for handling the non periodic contamination events.
+ */
 void quarantineTask(void *arg) {
   (void)arg;
 
   for (;;) {
+    // Quarantine as soon as the semaphore is given (max priority)
     xSemaphoreTake(quarantineStart, portMAX_DELAY);
     quarantine();
     GPIOJ21_Write(0u);
   }
 }
 
+/*
+ * This task is responsible for producing the medicine.
+ * It waits for the lab mutex to be available and then calls a function to
+ * produce a medicine or ship it.
+ */
 void medicineProductionTask(void *arg) {
   (void)arg;
   for (;;) {
 
+    // If the game is over, delete the task
     if (getVaccineCntr() >= 100) {
       vTaskDelete(medicineHandler);
     }
 
+    // Wait for the lab to be available
     if (xSemaphoreTake(lab, MUTEX_TIMEOUT) == pdTRUE) {
       GPIOJ11_Write(1u);
       medicine = assignMissionToLab(0);
       GPIOJ11_Write(0u);
+      // Free the lab mutex so that other tasks can use it
       xSemaphoreGive(lab);
     }
 
+    // Wait for the lab to be available
     if (xSemaphoreTake(lab, MUTEX_TIMEOUT) == pdTRUE) {
       GPIOJ12_Write(1u);
       shipMedicine(medicine);
       GPIOJ12_Write(0u);
+      // Give the LCD semaphore to update the display
       xSemaphoreGive(lcd);
+      // Free the lab mutex so that other tasks can use it
       xSemaphoreGive(lab);
     }
   }
@@ -171,14 +188,24 @@ void releaseClue(Token clue) {
   GPIOJ22_Write(1u);
   CyDelay(1u);
   GPIOJ22_Write(0u);
+  // Release the vaccineStart semaphore to start the vaccine task
   xSemaphoreGive(vaccineStart);
 }
 
+/*
+ * This task is responsible for producing the vaccine.
+ * It waits for the lab mutex to be available and then calls the
+ * assignMissionToLab function
+ */
 void vaccineProductionTask(void *arg) {
   (void)arg;
 
   for (;;) {
+    // Wait for the vaccineStart semaphore to be given
     xSemaphoreTake(vaccineStart, portMAX_DELAY);
+
+    // If we have to wait more than MUTEX_TIMEOUT, we don't have the time to
+    // produce a vaccine so we skip it
     if (xSemaphoreTake(lab, MUTEX_TIMEOUT)) {
       GPIOJ13_Write(1u);
       Token vaccine = assignMissionToLab(clueMain);
@@ -187,12 +214,15 @@ void vaccineProductionTask(void *arg) {
       xSemaphoreGive(lcd);
       xSemaphoreGive(lab);
     }
+
+    // If the game is over, delete the tasks
     if (getVaccineCntr() >= 100 || getPopulationCntr() == 0) {
       deleteTasks();
     }
   }
 }
 
+/* Delete all tasks */
 void deleteTasks(void) {
   vTaskDelete(quarantineHandler);
   vTaskDelete(medicineHandler);
@@ -200,6 +230,9 @@ void deleteTasks(void) {
   vTaskDelete(vaccineHandler);
 }
 
+/*
+ * Display the population, vaccine and medicine counters on the LCD.
+ */
 void lcdTask(void *arg) {
   (void)arg;
   for (;;) {
